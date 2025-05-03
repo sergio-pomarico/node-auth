@@ -1,3 +1,4 @@
+import { env } from "@shared/config";
 import { Resend } from "resend";
 
 export interface SendMailOptions {
@@ -13,7 +14,7 @@ export interface Attachement {
 }
 export class EmailService {
   constructor() {
-    this.transporter = new Resend(process.env.RESEND_API_KEY!);
+    this.transporter = new Resend(env.server.resend);
   }
 
   transporter: Resend;
