@@ -4,6 +4,7 @@ import { CreateUserUseCase } from "@domain/use-cases/user/create-user-usecase";
 import { UserRepositoryImpl } from "@infrastructure/repositories/user-repository-impl";
 import { UserRepository } from "@domain/repositories/user-repository";
 import { RegisterPayload } from "@presentation/schemas/register";
+import { VerifyUserUseCase } from "@domain/use-cases/user/verify-user-usecase";
 
 export class UserController {
   constructor(private repository: UserRepository = new UserRepositoryImpl()) {}
@@ -22,7 +23,29 @@ export class UserController {
     };
     new CreateUserUseCase(this.repository)
       .run(dto)
-      .then((user) => res.json({ status: "success", user }))
+      .then((user) =>
+        res.json({
+          status: "success",
+          message: `Verification email sended to ${user.email}`,
+        })
+      )
+      .catch((error) => next(error));
+  };
+
+  verify = async (
+    req: Request<{ userId: string; verificationCode: string }>,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const { userId, verificationCode } = req.params;
+    new VerifyUserUseCase(this.repository)
+      .run({ userId, verificationCode })
+      .then((result) =>
+        res.json({
+          status: result ? "success" : "error",
+          message: result ? "User verify successfully" : "User not verify",
+        })
+      )
       .catch((error) => next(error));
   };
 }

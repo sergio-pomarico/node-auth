@@ -17,5 +17,9 @@ export class UserRoutes {
       schemaValidation(registerSchema),
       this.controller.register
     );
+    this.router.get(
+      "/verify/:userId/:verificationCode",
+      this.controller.verify
+    );
   }
 }

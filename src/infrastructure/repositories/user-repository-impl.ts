@@ -5,6 +5,46 @@ import { Encrypt } from "@shared/encrypt";
 
 export class UserRepositoryImpl implements UserRepository {
   constructor() {}
+  verifyEmail = async (data: {
+    userId: string;
+    verificationCode: string;
+  }): Promise<boolean> => {
+    try {
+      const user = await prima.user.findUnique({
+        where: {
+          id: data.userId,
+        },
+      });
+
+      if (!user) {
+        throw new Error("Could not verify user");
+      }
+      if (user.verified) {
+        console.log("User already verified");
+        throw Error("User already verified");
+      }
+      if (user.verificationCode !== data.verificationCode) {
+        throw Error("Invalid verification code");
+      }
+      if (user.verificationCodeExpiresAt! < new Date()) {
+        throw Error("Verification code expired");
+      }
+      // Update the user to set verified to true
+      await prima.user.update({
+        where: {
+          id: data.userId,
+        },
+        data: {
+          verified: true,
+          verificationCode: null,
+          verificationCodeExpiresAt: null,
+        },
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
 
   create = async (dto: CreateUserDTO): Promise<UserEntity | null> => {
     try {
