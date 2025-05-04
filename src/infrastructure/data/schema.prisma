@@ -14,14 +14,15 @@ datasource db {
 }
 
 model User {
-  id                 String   @id @default(uuid())
-  name               String?  @map("name")
-  lastName           String?  @map("last_name")
-  email              String   @unique
-  verified           Boolean  @default(false) @map("is_verified")
-  verificationCode   String?  @default(nanoid()) @map("verification_code")
-  passwordResetCode  String?  @default(nanoid()) @map("password_reset_code")
-  password           String
-  createdAt          DateTime @default(now()) @map("created_at")
-  updatedAt          DateTime @default(now()) @map("updated_at")
+  id                          String    @id @default(uuid())
+  name                        String?   @map("name")
+  lastName                    String?   @map("last_name")
+  email                       String    @unique
+  verified                    Boolean   @default(false) @map("is_verified")
+  verificationCode            String?   @default(nanoid()) @map("verification_code")
+  verificationCodeExpiresAt   DateTime? @map("verification_code_expires_at")
+  passwordResetCode           String?   @default(nanoid()) @map("password_reset_code")
+  password                    String
+  createdAt                   DateTime  @default(now()) @map("created_at")
+  updatedAt                   DateTime  @default(now()) @map("updated_at")
 }

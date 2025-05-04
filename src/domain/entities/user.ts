@@ -7,6 +7,7 @@ export default interface UserEntity {
   verified: boolean;
   verificationCode: string | null;
   passwordResetCode: string | null;
+  verificationCodeExpiresAt?: Date | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
