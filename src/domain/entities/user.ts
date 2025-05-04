@@ -11,9 +11,10 @@ export default interface UserEntity {
   updatedAt?: Date;
 }
 
-export type CreateUserDTO = Pick<UserEntity, "email" | "password"> & {
-  confirmPassword: string;
-};
+export type CreateUserDTO = Pick<
+  UserEntity,
+  "email" | "password" | "name" | "lastName"
+>;
 export type UpdateUserDTO = Partial<
   Pick<
     UserEntity,

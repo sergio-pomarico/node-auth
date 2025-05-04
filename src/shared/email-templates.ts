@@ -11,7 +11,6 @@ export class ParseHTMLTemplate {
       "../../src/presentation/templates",
       `${template}.html`
     );
-    console.log(route);
     let htmlBody = await fs.readFile(route, "utf-8");
     htmlBody = htmlBody.replace(/{{(.*?)}}/g, (_, varName) => {
       return data[varName] ?? "";
