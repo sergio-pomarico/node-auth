@@ -6,6 +6,43 @@ import { nanoid } from "nanoid";
 
 export class UserRepositoryImpl implements UserRepository {
   constructor() {}
+  resetPassword = async (data: {
+    userId: string;
+    passwordResetCode: string;
+    password: string;
+  }): Promise<boolean> => {
+    try {
+      const user = await prima.user.findUnique({
+        where: {
+          id: data.userId,
+        },
+      });
+      if (!user) {
+        throw new Error("User not found");
+      }
+      if (!user.verified) {
+        throw new Error("User not verified");
+      }
+      if (user.passwordResetCode !== data.passwordResetCode) {
+        throw new Error("Invalid password reset code");
+      }
+
+      const hashedPassword = await Encrypt.hash(data.password);
+      // Update the user with the new password
+      await prima.user.update({
+        where: {
+          id: data.userId,
+        },
+        data: {
+          password: hashedPassword,
+          passwordResetCode: null,
+        },
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
   verifyEmail = async (data: {
     userId: string;
     verificationCode: string;

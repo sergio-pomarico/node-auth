@@ -7,6 +7,8 @@ import { RegisterPayload } from "@presentation/schemas/register";
 import { VerifyUserUseCase } from "@domain/use-cases/user/verify-user-usecase";
 import { ForgotPasswordUseCase } from "@domain/use-cases/user/forgot-password-usecase";
 import { ForgotPasswordPayload } from "@presentation/schemas/forgot-password";
+import { ResetPasswordPayload } from "@presentation/schemas/reset-password";
+import { ResetPasswordUseCase } from "@domain/use-cases/user/reset-password-usecase";
 
 export class UserController {
   constructor(private repository: UserRepository = new UserRepositoryImpl()) {}
@@ -64,6 +66,30 @@ export class UserController {
           status: "success",
           message:
             "Forgot password email sended to your email, please check it",
+        })
+      )
+      .catch((error) => next(error));
+  };
+
+  resetPassword = async (
+    req: Request<
+      { userId: string; passwordResetCode: string },
+      {},
+      ResetPasswordPayload
+    >,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const { userId, passwordResetCode } = req.params;
+    const { password } = req.body;
+    new ResetPasswordUseCase(this.repository)
+      .run({ userId, passwordResetCode, password })
+      .then((result) =>
+        res.json({
+          status: result ? "success" : "error",
+          message: result
+            ? "Password reset successfully"
+            : "Password not reset",
         })
       )
       .catch((error) => next(error));

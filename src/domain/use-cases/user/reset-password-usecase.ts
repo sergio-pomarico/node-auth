@@ -1,12 +1,13 @@
 import { UserRepository } from "@domain/repositories/user-repository";
 
-export class VerifyUserUseCase {
+export class ResetPasswordUseCase {
   constructor(private repository: UserRepository) {}
   run = async (data: {
     userId: string;
-    verificationCode: string;
+    passwordResetCode: string;
+    password: string;
   }): Promise<boolean> => {
-    const result = await this.repository.verifyEmail(data);
+    const result = await this.repository.resetPassword(data);
     return result;
   };
 }

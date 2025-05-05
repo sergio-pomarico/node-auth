@@ -3,6 +3,7 @@ import { Router } from "express";
 import { schemaValidation } from "@presentation/middlewares/validation";
 import { registerSchema } from "@presentation/schemas/register";
 import emailSchema from "@presentation/schemas/forgot-password";
+import { resetPasswordSchema } from "@presentation/schemas/reset-password";
 
 export class UserRoutes {
   constructor(public readonly router = Router()) {
@@ -26,6 +27,11 @@ export class UserRoutes {
       "/forgot-password",
       schemaValidation(emailSchema),
       this.controller.forgotPassword
+    );
+    this.router.post(
+      "/reset-password/:userId/:passwordResetCode",
+      schemaValidation(resetPasswordSchema),
+      this.controller.resetPassword
     );
   }
 }

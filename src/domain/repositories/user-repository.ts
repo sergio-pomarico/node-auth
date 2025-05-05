@@ -7,4 +7,9 @@ export interface UserRepository {
     verificationCode: string;
   }) => Promise<boolean>;
   forgotPassword: (email: string) => Promise<UserEntitiy | null>;
+  resetPassword: (data: {
+    userId: string;
+    passwordResetCode: string;
+    password: string;
+  }) => Promise<boolean>;
 }
