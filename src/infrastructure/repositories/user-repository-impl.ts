@@ -1,4 +1,8 @@
-import UserEntity, { CreateUserDTO } from "@domain/entities/user";
+import UserEntity, {
+  CreateUserDTO,
+  ResetPasswordDTO,
+  VerifyUserDTO,
+} from "@domain/entities/user";
 import { UserRepository } from "@domain/repositories/user-repository";
 import prima from "@infrastructure/data/db";
 import { Encrypt } from "@shared/encrypt";
@@ -6,15 +10,11 @@ import { nanoid } from "nanoid";
 
 export class UserRepositoryImpl implements UserRepository {
   constructor() {}
-  resetPassword = async (data: {
-    userId: string;
-    passwordResetCode: string;
-    password: string;
-  }): Promise<boolean> => {
+  resetPassword = async (dto: ResetPasswordDTO): Promise<boolean> => {
     try {
       const user = await prima.user.findUnique({
         where: {
-          id: data.userId,
+          id: dto.id,
         },
       });
       if (!user) {
@@ -23,15 +23,15 @@ export class UserRepositoryImpl implements UserRepository {
       if (!user.verified) {
         throw new Error("User not verified");
       }
-      if (user.passwordResetCode !== data.passwordResetCode) {
+      if (user.passwordResetCode !== dto.passwordResetCode) {
         throw new Error("Invalid password reset code");
       }
 
-      const hashedPassword = await Encrypt.hash(data.password);
+      const hashedPassword = await Encrypt.hash(dto.password);
       // Update the user with the new password
       await prima.user.update({
         where: {
-          id: data.userId,
+          id: dto.id,
         },
         data: {
           password: hashedPassword,
@@ -43,14 +43,11 @@ export class UserRepositoryImpl implements UserRepository {
       return false;
     }
   };
-  verifyEmail = async (data: {
-    userId: string;
-    verificationCode: string;
-  }): Promise<boolean> => {
+  verifyEmail = async (dto: VerifyUserDTO): Promise<boolean> => {
     try {
       const user = await prima.user.findUnique({
         where: {
-          id: data.userId,
+          id: dto.id,
         },
       });
 
@@ -60,7 +57,7 @@ export class UserRepositoryImpl implements UserRepository {
       if (user.verified) {
         throw Error("User already verified");
       }
-      if (user.verificationCode !== data.verificationCode) {
+      if (user.verificationCode !== dto.verificationCode) {
         throw Error("Invalid verification code");
       }
       if (user.verificationCodeExpiresAt! < new Date()) {
@@ -69,7 +66,7 @@ export class UserRepositoryImpl implements UserRepository {
       // Update the user to set verified to true
       await prima.user.update({
         where: {
-          id: data.userId,
+          id: dto.id,
         },
         data: {
           verified: true,

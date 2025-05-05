@@ -16,6 +16,14 @@ export type CreateUserDTO = Pick<
   UserEntity,
   "email" | "password" | "name" | "lastName"
 >;
+
+export type LoginUserDTO = Pick<UserEntity, "email" | "password">;
+export type ForgotPasswordDTO = Pick<UserEntity, "email">;
+export type ResetPasswordDTO = Pick<
+  UserEntity,
+  "password" | "passwordResetCode" | "id"
+>;
+export type VerifyUserDTO = Pick<UserEntity, "id" | "verificationCode">;
 export type UpdateUserDTO = Partial<
   Pick<
     UserEntity,
