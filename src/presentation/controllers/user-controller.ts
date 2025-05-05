@@ -5,6 +5,8 @@ import { UserRepositoryImpl } from "@infrastructure/repositories/user-repository
 import { UserRepository } from "@domain/repositories/user-repository";
 import { RegisterPayload } from "@presentation/schemas/register";
 import { VerifyUserUseCase } from "@domain/use-cases/user/verify-user-usecase";
+import { ForgotPasswordUseCase } from "@domain/use-cases/user/forgot-password-usecase";
+import { ForgotPasswordPayload } from "@presentation/schemas/forgot-password";
 
 export class UserController {
   constructor(private repository: UserRepository = new UserRepositoryImpl()) {}
@@ -44,6 +46,24 @@ export class UserController {
         res.json({
           status: result ? "success" : "error",
           message: result ? "User verify successfully" : "User not verify",
+        })
+      )
+      .catch((error) => next(error));
+  };
+
+  forgotPassword = async (
+    req: Request<{}, {}, ForgotPasswordPayload>,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const { email } = req.body;
+    new ForgotPasswordUseCase(this.repository)
+      .run(email)
+      .then(() =>
+        res.json({
+          status: "success",
+          message:
+            "Forgot password email sended to your email, please check it",
         })
       )
       .catch((error) => next(error));

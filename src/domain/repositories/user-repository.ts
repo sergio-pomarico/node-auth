@@ -6,4 +6,5 @@ export interface UserRepository {
     userId: string;
     verificationCode: string;
   }) => Promise<boolean>;
+  forgotPassword: (email: string) => Promise<UserEntitiy | null>;
 }

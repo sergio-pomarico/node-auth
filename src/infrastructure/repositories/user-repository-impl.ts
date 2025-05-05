@@ -2,6 +2,7 @@ import UserEntity, { CreateUserDTO } from "@domain/entities/user";
 import { UserRepository } from "@domain/repositories/user-repository";
 import prima from "@infrastructure/data/db";
 import { Encrypt } from "@shared/encrypt";
+import { nanoid } from "nanoid";
 
 export class UserRepositoryImpl implements UserRepository {
   constructor() {}
@@ -20,7 +21,6 @@ export class UserRepositoryImpl implements UserRepository {
         throw new Error("Could not verify user");
       }
       if (user.verified) {
-        console.log("User already verified");
         throw Error("User already verified");
       }
       if (user.verificationCode !== data.verificationCode) {
@@ -73,6 +73,37 @@ export class UserRepositoryImpl implements UserRepository {
         },
       });
       return user;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  forgotPassword = async (email: string): Promise<UserEntity | null> => {
+    try {
+      const user = await prima.user.findUnique({
+        where: {
+          email,
+        },
+      });
+      if (!user) {
+        throw new Error("User not found");
+      }
+      if (!user.verified) {
+        throw new Error("User not verified");
+      }
+      // Generate a new password reset token
+      const passwordResetCode = nanoid();
+
+      const updatedUser = await prima.user.update({
+        where: {
+          email,
+        },
+        data: {
+          passwordResetCode,
+        },
+      });
+
+      return updatedUser;
     } catch (error) {
       return null;
     }
