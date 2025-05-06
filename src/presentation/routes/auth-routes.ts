@@ -2,6 +2,7 @@ import { Router } from "express";
 import { schemaValidation } from "@presentation/middlewares/validation";
 import { loginSchema } from "@presentation/schemas/login";
 import { AuthController } from "@presentation/controllers/auth-controller";
+import { authMiddleware } from "@presentation/middlewares/authentication";
 
 export class AuthRoutes {
   constructor(public readonly router = Router()) {
@@ -17,5 +18,6 @@ export class AuthRoutes {
       schemaValidation(loginSchema),
       this.controller.login
     );
+    this.router.get("/me", authMiddleware, this.controller.me);
   }
 }

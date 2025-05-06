@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { ZodError, ZodSchema } from "zod";
+import { ZodSchema } from "zod";
 import { fromZodError } from "zod-validation-error";
 import HttpError, { ErrorCode } from "@domain/errors/http";
 

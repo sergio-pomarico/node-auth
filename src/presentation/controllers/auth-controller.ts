@@ -3,6 +3,7 @@ import { LoginPayload } from "@presentation/schemas/login";
 import { LoginUserUseCase } from "@domain/use-cases/auth/login-usecase";
 import { AuthRepository } from "@domain/repositories/auth-repository";
 import { AuthRepositoryImpl } from "@infrastructure/repositories/auth-repository-impl";
+import { UserInfoUseCase } from "@domain/use-cases/auth/user-info-usecase";
 
 export class AuthController {
   constructor(private repository: AuthRepository = new AuthRepositoryImpl()) {}
@@ -19,6 +20,18 @@ export class AuthController {
         res.status(200).json({
           status: "success",
           credentials: data,
+        });
+      })
+      .catch((error) => next(error));
+  };
+  me = async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.body?.userId;
+    new UserInfoUseCase(this.repository)
+      .run(userId)
+      .then((user) => {
+        res.status(200).json({
+          status: "success",
+          user,
         });
       })
       .catch((error) => next(error));
