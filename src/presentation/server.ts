@@ -1,5 +1,6 @@
 import express, { Application } from "express";
 import { IncomingMessage, ServerResponse, Server as HTTPServer } from "http";
+import cookieParser from "cookie-parser";
 import { AppRoutes } from "./routes/main-routes";
 
 export class Server {
@@ -13,6 +14,7 @@ export class Server {
   constructor(port: number) {
     this.port = port;
     this.app.use(express.json());
+    this.app.use(cookieParser());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use("/", AppRoutes.routes);
   }

@@ -10,7 +10,7 @@ export function omit<Data extends object, Keys extends keyof Data>(
   return result as Omit<Data, Keys>;
 }
 
-function pick<Data extends object, Keys extends keyof Data>(
+export function pick<Data extends object, Keys extends keyof Data>(
   data: Data,
   keys: Keys[]
 ): Pick<Data, Keys> {
