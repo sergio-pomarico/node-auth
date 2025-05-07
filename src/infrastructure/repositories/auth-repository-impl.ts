@@ -1,4 +1,4 @@
-import UserEntity, { LoginUserDTO } from "@domain/entities/user";
+import UserEntity, { LoginUserDTO, UserInfo } from "@domain/entities/user";
 import { AuthRepository } from "@domain/repositories/auth-repository";
 import prima from "@infrastructure/data/db";
 import { Encrypt } from "@shared/encrypt";
@@ -6,7 +6,7 @@ import { omit } from "@shared/properties";
 
 export class AuthRepositoryImpl implements AuthRepository {
   constructor() {}
-  userInfo = async (id: string): Promise<UserEntity | null> => {
+  userInfo = async (id: string): Promise<UserInfo | null> => {
     try {
       const user = await prima.user.findFirst({
         where: {
@@ -16,6 +16,9 @@ export class AuthRepositoryImpl implements AuthRepository {
       if (!user) {
         throw new Error("User not found");
       }
+      if (!user.verified) {
+        throw new Error("User not verified");
+      }
       const userInfo = omit(user, [
         "verified",
         "password",
@@ -23,8 +26,9 @@ export class AuthRepositoryImpl implements AuthRepository {
         "passwordResetCode",
         "passwordResetCode",
         "verificationCodeExpiresAt",
+        "passwordResetCodeExpiresAt",
       ]);
-      return userInfo as UserEntity;
+      return userInfo;
     } catch (error) {
       return null;
     }

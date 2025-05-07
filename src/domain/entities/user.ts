@@ -6,8 +6,9 @@ export default interface UserEntity {
   email: string;
   verified: boolean;
   verificationCode: string | null;
-  passwordResetCode: string | null;
   verificationCodeExpiresAt?: Date | null;
+  passwordResetCode: string | null;
+  passwordResetCodeExpiresAt?: Date | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -34,4 +35,14 @@ export type UpdateUserDTO = Partial<
     | "verificationCode"
     | "passwordResetCode"
   >
+>;
+
+export type UserInfo = Omit<
+  UserEntity,
+  | "verified"
+  | "password"
+  | "verificationCode"
+  | "passwordResetCode"
+  | "verificationCodeExpiresAt"
+  | "passwordResetCodeExpiresAt"
 >;

@@ -12,7 +12,7 @@ export class UserRepositoryImpl implements UserRepository {
   constructor() {}
   resetPassword = async (dto: ResetPasswordDTO): Promise<boolean> => {
     try {
-      const user = await prima.user.findUnique({
+      const user: UserEntity | null = await prima.user.findUnique({
         where: {
           id: dto.id,
         },
@@ -27,6 +27,10 @@ export class UserRepositoryImpl implements UserRepository {
         throw new Error("Invalid password reset code");
       }
 
+      if (user.passwordResetCodeExpiresAt! < new Date()) {
+        throw new Error("Password reset code expired");
+      }
+
       const hashedPassword = await Encrypt.hash(dto.password);
       // Update the user with the new password
       await prima.user.update({
@@ -36,6 +40,7 @@ export class UserRepositoryImpl implements UserRepository {
         data: {
           password: hashedPassword,
           passwordResetCode: null,
+          passwordResetCodeExpiresAt: null,
         },
       });
       return true;
@@ -127,6 +132,7 @@ export class UserRepositoryImpl implements UserRepository {
       }
       // Generate a new password reset token
       const passwordResetCode = nanoid();
+      const passwordResetCodeExpiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
       const updatedUser = await prima.user.update({
         where: {
@@ -134,6 +140,7 @@ export class UserRepositoryImpl implements UserRepository {
         },
         data: {
           passwordResetCode,
+          passwordResetCodeExpiresAt,
         },
       });
 
