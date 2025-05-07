@@ -1,0 +1,25 @@
+meta {
+  name: Login User
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{URL}}/auth/login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "sergio@yopmail.com",
+    "password": "*Pass_1234"
+  }
+}
+
+script:post-response {
+  bru.setVar("token", res.body.credentials.accessToken);
+  bru.setEnvVar("refreshToken", res.body.credentials.refreshToken)
+  
+  
+}

@@ -1,0 +1,21 @@
+meta {
+  name: Register a new user
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{URL}}/user/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "{{$randomUserName}}@yopmail.com",
+    "password": "*Pass_1234",
+    "confirmPassword": "*Pass_1234",
+    "name": "{{$randomFirstName}}",
+    "lastName": "{{$randomLastName}}"
+  }
+}

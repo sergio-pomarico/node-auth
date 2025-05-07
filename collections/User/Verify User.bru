@@ -1,0 +1,16 @@
+meta {
+  name: Verify User
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{URL}}/user/verify/:userId/:verificationCode
+  body: none
+  auth: inherit
+}
+
+params:path {
+  userId: 72a30516-2df1-46fe-acd2-1dc3604a6093
+  verificationCode: nRHWmB4_l4UY_oFu_JJwk
+}
