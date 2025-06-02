@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodSchema } from "zod";
 import { fromZodError } from "zod-validation-error";
-import HttpError, { ErrorCode } from "@domain/errors/http";
+import HttpError from "@domain/errors/http";
+import { ErrorCode } from "@domain/errors/code";
 
 export const schemaValidation =
   (schema: ZodSchema) => (req: Request, res: Response, next: NextFunction) => {

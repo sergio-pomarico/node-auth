@@ -1,22 +1,7 @@
-export enum ErrorCode {
-  BAD_REQUEST = "BAD_REQUEST", // 400
-  UNAUTHORIZED = "UNAUTHORIZED", // 401
-  FORBIDDEN = "FORBIDDEN", // 403
-  NOT_FOUND = "NOT_FOUND", // 404
-  INTERNAL_SERVER = "INTERNAL_SERVER", // 500
-}
+import AppError from "./app";
+import { ErrorCode } from "./code";
 
-class ErrorDetails {
-  constructor(
-    public readonly code: ErrorCode,
-    public readonly message: string,
-    public readonly description: string
-  ) {}
-}
-
-export default class HttpError extends Error {
-  public readonly error: ErrorDetails;
-
+export default class HttpError extends AppError {
   private constructor(
     public readonly message: string,
     description: string,
@@ -24,8 +9,7 @@ export default class HttpError extends Error {
     public readonly status: "fail" | "error",
     public readonly statusCode: number
   ) {
-    super(message);
-    this.error = new ErrorDetails(code, message, description);
+    super(message, description, code, status, statusCode);
     Error.captureStackTrace(this, HttpError);
   }
 
