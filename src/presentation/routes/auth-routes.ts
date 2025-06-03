@@ -19,5 +19,6 @@ export class AuthRoutes {
       this.controller.login
     );
     this.router.get("/me", authMiddleware, this.controller.me);
+    this.router.post("/refresh", this.controller.refreshToken);
   }
 }

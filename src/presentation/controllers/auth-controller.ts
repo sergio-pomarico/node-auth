@@ -4,6 +4,7 @@ import { LoginUserUseCase } from "@domain/use-cases/auth/login-usecase";
 import { AuthRepository } from "@domain/repositories/auth-repository";
 import { AuthRepositoryImpl } from "@infrastructure/repositories/auth-repository-impl";
 import { UserInfoUseCase } from "@domain/use-cases/auth/user-info-usecase";
+import { RefreshTokenUseCase } from "@domain/use-cases/auth/refresh-token-usecase";
 
 export class AuthController {
   constructor(private repository: AuthRepository = new AuthRepositoryImpl()) {}
@@ -32,6 +33,18 @@ export class AuthController {
         res.status(200).json({
           status: "success",
           user,
+        });
+      })
+      .catch((error) => next(error));
+  };
+  refreshToken = async (req: Request, res: Response, next: NextFunction) => {
+    const refreshToken = req.headers["x-refresh-token"] ?? "";
+    new RefreshTokenUseCase(this.repository)
+      .run(refreshToken as string)
+      .then((data) => {
+        res.status(200).json({
+          status: "success",
+          accessToken: data.accessToken,
         });
       })
       .catch((error) => next(error));

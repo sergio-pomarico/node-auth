@@ -9,3 +9,8 @@ post {
   body: none
   auth: inherit
 }
+
+headers {
+  x-refresh-token: {{refreshToken}}
+  Authorization: {{token}}
+}
