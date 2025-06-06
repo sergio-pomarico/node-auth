@@ -9,8 +9,18 @@ export default interface UserEntity {
   verificationCodeExpiresAt?: Date | null;
   passwordResetCode: string | null;
   passwordResetCodeExpiresAt?: Date | null;
+  failedLoginAttempts?: number;
+  status: UserStatus;
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+export type UserStatus = keyof typeof UserStatusEnum;
+
+export enum UserStatusEnum {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  BLOCKED = "BLOCKED",
 }
 
 export type CreateUserDTO = Pick<
@@ -41,6 +51,8 @@ export type UserInfo = Omit<
   UserEntity,
   | "verified"
   | "password"
+  | "failedLoginAttempts"
+  | "status"
   | "verificationCode"
   | "passwordResetCode"
   | "verificationCodeExpiresAt"

@@ -14,17 +14,24 @@ datasource db {
 }
 
 model User {
-  id                          String    @id @default(uuid())
-  name                        String?   @map("name")
-  lastName                    String?   @map("last_name")
-  email                       String    @unique
-  verified                    Boolean   @default(false) @map("is_verified")
-  verificationCode            String?   @default(nanoid()) @map("verification_code")
-  verificationCodeExpiresAt   DateTime? @map("verification_code_expires_at")
-  passwordResetCode           String?   @map("password_reset_code")
-  passwordResetCodeExpiresAt  DateTime? @map("password_reset_code_expires_at")
-  jwtSecret                   String?   @default(cuid()) @map("jwt_secret")
+  id                          String     @id @default(uuid())
+  name                        String?    @map("name")
+  lastName                    String?    @map("last_name")
+  email                       String     @unique
+  verified                    Boolean    @default(false) @map("is_verified")
+  verificationCode            String?    @default(nanoid()) @map("verification_code")
+  verificationCodeExpiresAt   DateTime?  @map("verification_code_expires_at")
+  passwordResetCode           String?    @map("password_reset_code")
+  passwordResetCodeExpiresAt  DateTime?  @map("password_reset_code_expires_at")
+  failedLoginAttempts         Int        @default(0) @map("failed_login_attempts")
+  status                      UserStatus @default(INACTIVE) @map("status")
   password                    String
-  createdAt                   DateTime  @default(now()) @map("created_at")
-  updatedAt                   DateTime  @default(now()) @map("updated_at")
+  createdAt                   DateTime   @default(now()) @map("created_at")
+  updatedAt                   DateTime   @default(now()) @map("updated_at")
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
 }

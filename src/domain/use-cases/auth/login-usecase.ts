@@ -9,6 +9,7 @@ export class LoginUserUseCase {
   run = async (
     dto: LoginUserDTO
   ): Promise<{ accessToken: string; refreshToken: string }> => {
+    // Validate user credentials
     const user = await this.repository.login(dto);
     // Generate tokens
     const [accessToken, refreshToken] = await Promise.all([

@@ -1,6 +1,7 @@
 import UserEntity, {
   CreateUserDTO,
   ResetPasswordDTO,
+  UserStatusEnum,
   VerifyUserDTO,
 } from "@domain/entities/user";
 import AuthenticationError from "@domain/errors/authetication";
@@ -55,6 +56,7 @@ export class UserRepositoryImpl implements UserRepository {
           password: hashedPassword,
           passwordResetCode: null,
           passwordResetCodeExpiresAt: null,
+          status: UserStatusEnum.ACTIVE,
         },
       });
       return true;
@@ -114,9 +116,9 @@ export class UserRepositoryImpl implements UserRepository {
           id: dto.id,
         },
         data: {
-          verified: true,
           verificationCode: null,
           verificationCodeExpiresAt: null,
+          status: UserStatusEnum.ACTIVE,
         },
       });
       return true;

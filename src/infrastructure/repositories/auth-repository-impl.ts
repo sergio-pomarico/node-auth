@@ -1,4 +1,8 @@
-import UserEntity, { LoginUserDTO, UserInfo } from "@domain/entities/user";
+import UserEntity, {
+  LoginUserDTO,
+  UserInfo,
+  UserStatusEnum,
+} from "@domain/entities/user";
 import AuthenticationError from "@domain/errors/authetication";
 import { ErrorCode } from "@domain/errors/code";
 import { AuthRepository } from "@domain/repositories/auth-repository";
@@ -21,10 +25,10 @@ export class AuthRepositoryImpl implements AuthRepository {
           "try to find a user what does not exist"
         );
       }
-      if (!user.verified) {
+      if (!user.verified || user.status === UserStatusEnum.BLOCKED) {
         throw AuthenticationError.userNotVerified(
-          "User not verified",
-          "try to get user info of not verified user"
+          "User not verified or blocked",
+          "try to get user info of not verified user or user is blocked"
         );
       }
       const userInfo = omit(user, [
@@ -64,10 +68,10 @@ export class AuthRepositoryImpl implements AuthRepository {
           "try to find a user what does not exist"
         );
       }
-      if (!user.verified) {
+      if (!user.verified || user.status === UserStatusEnum.BLOCKED) {
         throw AuthenticationError.userNotVerified(
-          "User not verified",
-          "try to get user info of not verified user"
+          "User not verified or blocked",
+          "try to get user info of not verified user or user is blocked"
         );
       }
       const isPasswordValid = await Encrypt.compare(
@@ -75,10 +79,31 @@ export class AuthRepositoryImpl implements AuthRepository {
         dto.password
       );
       if (!isPasswordValid) {
-        AuthenticationError.invalidCredentials(
+        const failedLoginAttempts = user.failedLoginAttempts + 1;
+        await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            failedLoginAttempts: failedLoginAttempts,
+            status:
+              failedLoginAttempts >= 3 ? UserStatusEnum.BLOCKED : user.status,
+          },
+        });
+        throw AuthenticationError.invalidCredentials(
           "Invalid credentials",
           "The email or password provided are incorrect"
         );
+      } else {
+        await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            failedLoginAttempts: 0,
+            status: UserStatusEnum.ACTIVE,
+          },
+        });
       }
       return user;
     } catch (error) {

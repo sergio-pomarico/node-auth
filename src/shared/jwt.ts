@@ -16,7 +16,7 @@ export class JWT {
       jwt.sign(
         payload,
         signingKey,
-        { ...(options && options), algorithm: "RS256" },
+        { ...options, algorithm: "RS256" },
         (err, token) => {
           if (err) return resolve(null);
           return resolve(token!);
