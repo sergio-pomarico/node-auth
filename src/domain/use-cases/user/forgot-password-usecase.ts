@@ -1,6 +1,6 @@
 import { UserRepository } from "@domain/repositories/user-repository";
 import UserEntity, { CreateUserDTO } from "@domain/entities/user";
-import { EmailService } from "@presentation/services/email";
+import { EmailService } from "@infrastructure/services/email";
 import { ParseHTMLTemplate } from "@shared/email-templates";
 import { env } from "@shared/config";
 
