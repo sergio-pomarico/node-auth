@@ -11,6 +11,8 @@ export default interface UserEntity {
   passwordResetCodeExpiresAt?: Date | null;
   failedLoginAttempts?: number;
   status: UserStatus;
+  mfaEnabled?: boolean;
+  mfaSecret?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 }

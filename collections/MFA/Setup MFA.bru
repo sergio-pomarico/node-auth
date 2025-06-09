@@ -1,0 +1,15 @@
+meta {
+  name: Setup MFA
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{URL}}/mfa/setup
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: {{token}}
+}
