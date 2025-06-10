@@ -12,7 +12,7 @@ export class MfaRoutes {
 
   routes(): void {
     this.router.post("/setup", authMiddleware, this.controller.setup);
-    this.router.post("/verify", () => {});
+    this.router.post("/verify", this.controller.verify);
     this.router.post("/reset", () => {});
   }
 }

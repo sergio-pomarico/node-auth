@@ -1,0 +1,21 @@
+meta {
+  name: Verify MFA
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{URL}}/mfa/verify
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:json {
+  {
+    "token": "480698"
+  }
+}

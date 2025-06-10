@@ -8,26 +8,41 @@ export class LoginUserUseCase {
   constructor(private repository: AuthRepository) {}
   run = async (
     dto: LoginUserDTO
-  ): Promise<{ accessToken: string; refreshToken: string }> => {
+  ): Promise<{ accessToken: string; refreshToken?: string }> => {
     // Validate user credentials
     const user = await this.repository.login(dto);
-    // Generate tokens
-    const [accessToken, refreshToken] = await Promise.all([
-      JWT.generateToken({ id: user?.id }, "access", { expiresIn: "15m" }),
-      JWT.generateToken({ id: user?.id }, "refresh", { expiresIn: "30d" }),
-    ]);
-    if (!accessToken || !refreshToken) {
-      throw new AuthenticationError(
-        "Failed to generate tokens",
-        "can't not generate access o refresh tokens",
-        ErrorCode.INTERNAL_SERVER,
-        "error",
-        500
-      );
+    // check if mfa is enabled for the user
+    if (user?.mfaEnabled ?? false) {
+      // TODO: prevent this token being used for other purposes
+      const accessToken = await JWT.generateToken({ id: user?.id }, "access", {
+        expiresIn: "5m",
+      });
+      return {
+        accessToken: accessToken!,
+      };
+    } else {
+      // Generate tokens
+      const [accessToken, refreshToken] = await Promise.all([
+        JWT.generateToken({ id: user?.id, scope: "access" }, "access", {
+          expiresIn: "15m",
+        }),
+        JWT.generateToken({ id: user?.id, scope: "refresh" }, "refresh", {
+          expiresIn: "30d",
+        }),
+      ]);
+      if (!accessToken || !refreshToken) {
+        throw new AuthenticationError(
+          "Failed to generate tokens",
+          "can't not generate access o refresh tokens",
+          ErrorCode.INTERNAL_SERVER,
+          "error",
+          500
+        );
+      }
+      return {
+        accessToken: accessToken!,
+        refreshToken: refreshToken!,
+      };
     }
-    return {
-      accessToken: accessToken!,
-      refreshToken: refreshToken!,
-    };
   };
 }

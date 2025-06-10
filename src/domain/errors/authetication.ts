@@ -1,6 +1,5 @@
 import AppError from "./app";
 import { ErrorCode } from "./code";
-import { ErrorDetails } from "./detail";
 
 export default class AuthenticationError extends AppError {
   constructor(
@@ -36,5 +35,13 @@ export default class AuthenticationError extends AppError {
     code: ErrorCode = ErrorCode.BAD_REQUEST
   ): AuthenticationError {
     return new AuthenticationError(message, description, code, "error", 400);
+  }
+
+  static mfaRequired(
+    message: string,
+    description: string,
+    code: ErrorCode = ErrorCode.UNAUTHORIZED
+  ): AuthenticationError {
+    return new AuthenticationError(message, description, code, "fail", 401);
   }
 }

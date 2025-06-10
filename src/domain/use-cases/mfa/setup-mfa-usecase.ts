@@ -15,7 +15,6 @@ export class SetupMFAUserUseCase {
       period: 60,
       secret: secret.base32,
     });
-
     const uri = otp.toString();
     const qr = await toDataURL(uri);
     return {

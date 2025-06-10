@@ -1,0 +1,49 @@
+import AuthenticationError from "@domain/errors/authetication";
+import { ErrorCode } from "@domain/errors/code";
+import { MFARepository } from "@domain/repositories/mfa-repository";
+import { JWT } from "@shared/jwt";
+import { Secret, TOTP } from "otpauth";
+
+export class VerifyMFAUserUseCase {
+  constructor(private repository: MFARepository) {}
+  run = async (
+    userId: string,
+    token: string
+  ): Promise<{ accessToken: string; refreshToken: string } | null> => {
+    const user = await this.repository.verify(userId);
+    const secret = Secret.fromBase32(user?.mfaSecret as string);
+    const otp = new TOTP({
+      algorithm: "SHA1",
+      issuer: "codeo.co",
+      label: user?.email ?? "",
+      digits: 6,
+      period: 60,
+      secret,
+    });
+    const isValidToken = otp.validate({ token, window: 10 });
+    if (isValidToken === null) {
+      throw AuthenticationError.mfaRequired(
+        "Invalid MFA token",
+        "The provided MFA token is invalid"
+      );
+    }
+    // Generate tokens
+    const [accessToken, refreshToken] = await Promise.all([
+      JWT.generateToken({ id: user?.id }, "access", { expiresIn: "15m" }),
+      JWT.generateToken({ id: user?.id }, "refresh", { expiresIn: "30d" }),
+    ]);
+    if (!accessToken || !refreshToken) {
+      throw new AuthenticationError(
+        "Failed to generate tokens",
+        "can't not generate access o refresh tokens",
+        ErrorCode.INTERNAL_SERVER,
+        "error",
+        500
+      );
+    }
+    return {
+      accessToken: accessToken!,
+      refreshToken: refreshToken!,
+    };
+  };
+}
