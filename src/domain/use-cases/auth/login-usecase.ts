@@ -1,8 +1,8 @@
 import { LoginUserDTO } from "@domain/entities/user";
-import AuthenticationError from "@domain/errors/authetication";
 import { ErrorCode } from "@domain/errors/code";
 import { AuthRepository } from "@domain/repositories/auth-repository";
 import { JWT } from "@shared/jwt";
+import AuthenticationError from "@domain/errors/authetication";
 
 export class LoginUserUseCase {
   constructor(private repository: AuthRepository) {}
@@ -13,10 +13,13 @@ export class LoginUserUseCase {
     const user = await this.repository.login(dto);
     // check if mfa is enabled for the user
     if (user?.mfaEnabled ?? false) {
-      // TODO: prevent this token being used for other purposes
-      const accessToken = await JWT.generateToken({ id: user?.id }, "access", {
-        expiresIn: "5m",
-      });
+      const accessToken = await JWT.generateToken(
+        { id: user?.id, scope: "mfa" },
+        "access",
+        {
+          expiresIn: "5m",
+        }
+      );
       return {
         accessToken: accessToken!,
       };

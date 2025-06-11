@@ -6,34 +6,37 @@ interface DecodedToken {
   iat: number;
   id: string;
   exp: number;
+  scope: Scope;
 }
 
-export const authMiddleware = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { authorization: token } = req.headers;
+type Scope = "access" | "mfa" | "refresh";
 
-  const error = HttpError.unauthorize(
-    "User not verified",
-    "request unauthorized"
-  );
+export const authMiddleware =
+  (scope: Scope) => async (req: Request, res: Response, next: NextFunction) => {
+    const { authorization: token } = req.headers;
 
-  if (token) {
-    const payload = await JWT.verifyToken<DecodedToken>(token, "access");
-    if (!payload) {
-      res.status(401).send(error);
-    } else {
-      if (req.body) {
-        req.body.userId = payload.id;
+    const error = HttpError.unauthorize(
+      "User not authenticated",
+      "You must be logged in to access this resource"
+    );
+
+    if (token) {
+      const payload = await JWT.verifyToken<DecodedToken>(token, "access");
+      if (!payload) {
+        res.status(401).send(error);
       } else {
-        req.body = {};
-        req.body.userId = payload.id;
+        if (scope !== payload.scope) {
+          res.status(401).send(error);
+        }
+        if (req.body) {
+          req.body.userId = payload.id;
+        } else {
+          req.body = {};
+          req.body.userId = payload.id;
+        }
+        next();
       }
-      next();
+    } else {
+      res.status(401).send(error);
     }
-  } else {
-    res.status(401).send(error);
-  }
-};
+  };

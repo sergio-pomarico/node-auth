@@ -18,7 +18,7 @@ export class AuthRoutes {
       schemaValidation(loginSchema),
       this.controller.login
     );
-    this.router.get("/me", authMiddleware, this.controller.me);
+    this.router.get("/me", authMiddleware("access"), this.controller.me);
     this.router.post("/refresh", this.controller.refreshToken);
   }
 }

@@ -16,6 +16,11 @@ headers {
 
 body:json {
   {
-    "token": "480698"
+    "token": "609305"
   }
+}
+
+script:post-response {
+  bru.setVar("token", res.body.credentials.accessToken);
+  bru.setEnvVar("refreshToken", res.body.credentials.refreshToken)
 }

@@ -57,6 +57,7 @@ export type UserInfo = Omit<
   | "status"
   | "verificationCode"
   | "passwordResetCode"
+  | "mfaSecret"
   | "verificationCodeExpiresAt"
   | "passwordResetCodeExpiresAt"
 >;

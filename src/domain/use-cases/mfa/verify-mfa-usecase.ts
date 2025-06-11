@@ -20,7 +20,7 @@ export class VerifyMFAUserUseCase {
       period: 60,
       secret,
     });
-    const isValidToken = otp.validate({ token, window: 10 });
+    const isValidToken = otp.validate({ token, window: 2 });
     if (isValidToken === null) {
       throw AuthenticationError.mfaRequired(
         "Invalid MFA token",

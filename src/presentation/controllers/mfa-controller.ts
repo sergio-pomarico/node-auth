@@ -27,8 +27,7 @@ export class MFAController {
         res.status(200).json({
           status: "success",
           message: "MFA verified successfully",
-          accessToken: data?.accessToken,
-          refreshToken: data?.refreshToken,
+          credentials: data,
         });
       })
       .catch((error) => next(error));

@@ -38,6 +38,7 @@ export class AuthRepositoryImpl implements AuthRepository {
         "passwordResetCode",
         "verificationCodeExpiresAt",
         "passwordResetCodeExpiresAt",
+        "mfaSecret",
       ]);
       return userInfo;
     } catch (error) {
