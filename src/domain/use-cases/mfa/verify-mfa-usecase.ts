@@ -11,6 +11,13 @@ export class VerifyMFAUserUseCase {
     token: string
   ): Promise<{ accessToken: string; refreshToken: string } | null> => {
     const user = await this.repository.verify(userId);
+
+    if (user?.mfaSecret === null || !user?.mfaEnabled) {
+      throw AuthenticationError.mfaRequired(
+        "MFA is required",
+        "User has not set up MFA yet"
+      );
+    }
     const secret = Secret.fromBase32(user?.mfaSecret as string);
     const otp = new TOTP({
       algorithm: "SHA1",
@@ -20,7 +27,7 @@ export class VerifyMFAUserUseCase {
       period: 60,
       secret,
     });
-    const isValidToken = otp.validate({ token, window: 2 });
+    const isValidToken = otp.validate({ token, window: 5 });
     if (isValidToken === null) {
       throw AuthenticationError.mfaRequired(
         "Invalid MFA token",

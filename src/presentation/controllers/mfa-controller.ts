@@ -1,4 +1,5 @@
 import { MFARepository } from "@domain/repositories/mfa-repository";
+import { ResetMFAUserUseCase } from "@domain/use-cases/mfa/reset-mfa-usecase";
 import { SetupMFAUserUseCase } from "@domain/use-cases/mfa/setup-mfa-usecase";
 import { VerifyMFAUserUseCase } from "@domain/use-cases/mfa/verify-mfa-usecase";
 import { MFARepositoryImpl } from "@infrastructure/repositories/mfa-repository-impl";
@@ -28,6 +29,18 @@ export class MFAController {
           status: "success",
           message: "MFA verified successfully",
           credentials: data,
+        });
+      })
+      .catch((error) => next(error));
+  };
+  reset = async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req.body;
+    new ResetMFAUserUseCase(this.repository)
+      .run(userId)
+      .then((result) => {
+        res.status(200).json({
+          status: result ? "success" : "error",
+          message: result ? "MFA reset successfully" : "Failed to reset MFA",
         });
       })
       .catch((error) => next(error));

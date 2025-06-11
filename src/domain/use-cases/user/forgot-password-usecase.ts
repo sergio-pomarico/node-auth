@@ -11,8 +11,7 @@ export class ForgotPasswordUseCase {
   ) {}
   run = async (email: string): Promise<boolean> => {
     const user = await this.repository.forgotPassword(email);
-    if (!user) throw new Error("User not found");
-    this.sendEmailWithResetPasswordCode(user);
+    this.sendEmailWithResetPasswordCode(user!);
     return true;
   };
 

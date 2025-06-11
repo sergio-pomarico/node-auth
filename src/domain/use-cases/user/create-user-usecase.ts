@@ -11,7 +11,6 @@ export class CreateUserUseCase {
   ) {}
   run = async (dto: CreateUserDTO): Promise<UserEntity> => {
     const user = await this.repository.create(dto);
-    if (!user) throw new Error("User not created");
     await this.sendEmailWithValidation(user!);
     return user!;
   };

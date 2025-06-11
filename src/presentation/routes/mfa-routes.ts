@@ -13,6 +13,6 @@ export class MfaRoutes {
   routes(): void {
     this.router.post("/setup", authMiddleware("access"), this.controller.setup);
     this.router.post("/verify", authMiddleware("mfa"), this.controller.verify);
-    this.router.post("/reset", authMiddleware("access"), () => {});
+    this.router.post("/reset", authMiddleware("access"), this.controller.reset);
   }
 }
