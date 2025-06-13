@@ -12,6 +12,7 @@ export default interface UserEntity {
   failedLoginAttempts?: number;
   status: UserStatus;
   mfaEnabled?: boolean;
+  refreshTokenId: string | null;
   mfaSecret?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
@@ -60,4 +61,5 @@ export type UserInfo = Omit<
   | "mfaSecret"
   | "verificationCodeExpiresAt"
   | "passwordResetCodeExpiresAt"
+  | "refreshTokenId"
 >;

@@ -12,6 +12,51 @@ import { omit } from "@shared/properties";
 
 export class AuthRepositoryImpl implements AuthRepository {
   constructor() {}
+  refreshToken = async (
+    id: string,
+    refreshId: string
+  ): Promise<UserEntity | null> => {
+    try {
+      const user = await prisma.user.findFirst({
+        where: {
+          id,
+        },
+      });
+      if (!user) {
+        throw AuthenticationError.userNotFound(
+          "User not found",
+          "try to find a user what does not exist"
+        );
+      }
+      if (!user.verified || user.status === UserStatusEnum.BLOCKED) {
+        throw AuthenticationError.userNotVerified(
+          "User not verified or blocked",
+          "try to get user info of not verified user or user is blocked"
+        );
+      }
+      if (user.refreshTokenId !== refreshId) {
+        throw AuthenticationError.invalidCredentials(
+          "Invalid refresh token",
+          "The provided refresh token is invalid or expired"
+        );
+      }
+
+      return user;
+    } catch (error) {
+      if (error instanceof AuthenticationError) {
+        throw error;
+      } else if (error instanceof Error) {
+        throw new AuthenticationError(
+          error.message,
+          "An error occurred while trying to refresh token",
+          ErrorCode.INTERNAL_SERVER,
+          "fail",
+          500
+        );
+      }
+      return null;
+    }
+  };
   userInfo = async (id: string): Promise<UserInfo | null> => {
     try {
       const user = await prisma.user.findFirst({
@@ -39,6 +84,7 @@ export class AuthRepositoryImpl implements AuthRepository {
         "verificationCodeExpiresAt",
         "passwordResetCodeExpiresAt",
         "mfaSecret",
+        "refreshTokenId",
       ]);
       return userInfo;
     } catch (error) {

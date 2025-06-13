@@ -29,9 +29,13 @@ export class LoginUserUseCase {
         JWT.generateToken({ id: user?.id, scope: "access" }, "access", {
           expiresIn: "15m",
         }),
-        JWT.generateToken({ id: user?.id, scope: "refresh" }, "refresh", {
-          expiresIn: "30d",
-        }),
+        JWT.generateToken(
+          { id: user?.id, scope: "refresh", refreshId: user?.refreshTokenId },
+          "refresh",
+          {
+            expiresIn: "30d",
+          }
+        ),
       ]);
       if (!accessToken || !refreshToken) {
         throw new AuthenticationError(

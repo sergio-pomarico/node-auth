@@ -7,6 +7,7 @@ interface DecodedToken {
   iat: number;
   id: string;
   exp: number;
+  refreshId: string;
 }
 
 export class RefreshTokenUseCase {
@@ -25,12 +26,17 @@ export class RefreshTokenUseCase {
     }
 
     // Check if the user exists
-    const user = await this.repository.userInfo(decoded.id);
+    const user = await this.repository.refreshToken(
+      decoded.id,
+      decoded.refreshId
+    );
 
     // Generate a new access token
-    const accessToken = await JWT.generateToken({ id: user?.id }, "access", {
-      expiresIn: "15m",
-    });
+    const accessToken = await JWT.generateToken(
+      { id: user?.id, scope: "access" },
+      "access",
+      { expiresIn: "15m" }
+    );
 
     if (!accessToken) {
       throw new AuthenticationError(

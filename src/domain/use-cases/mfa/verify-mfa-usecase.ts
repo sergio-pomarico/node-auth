@@ -36,8 +36,14 @@ export class VerifyMFAUserUseCase {
     }
     // Generate tokens
     const [accessToken, refreshToken] = await Promise.all([
-      JWT.generateToken({ id: user?.id }, "access", { expiresIn: "15m" }),
-      JWT.generateToken({ id: user?.id }, "refresh", { expiresIn: "30d" }),
+      JWT.generateToken({ id: user?.id, scope: "access" }, "access", {
+        expiresIn: "15m",
+      }),
+      JWT.generateToken(
+        { id: user?.id, scope: "refresh", refreshId: user?.refreshTokenId },
+        "refresh",
+        { expiresIn: "30d" }
+      ),
     ]);
     if (!accessToken || !refreshToken) {
       throw new AuthenticationError(

@@ -26,6 +26,7 @@ model User {
   failedLoginAttempts         Int        @default(0) @map("failed_login_attempts")
   status                      UserStatus @default(INACTIVE) @map("status")
   password                    String
+  refreshTokenId              String?    @default(nanoid()) @map("refresh_token_id")
   mfaEnabled                  Boolean    @default(false) @map("mfa_enabled")
   mfaSecret                   String?    @map("mfa_secret")
   createdAt                   DateTime   @default(now()) @map("created_at")
