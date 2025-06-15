@@ -9,9 +9,51 @@ import { AuthRepository } from "@domain/repositories/auth-repository";
 import prisma from "@infrastructure/data/db";
 import { Encrypt } from "@shared/encrypt";
 import { omit } from "@shared/properties";
+import { nanoid } from "nanoid";
 
 export class AuthRepositoryImpl implements AuthRepository {
   constructor() {}
+  logout = async (id: string): Promise<void> => {
+    try {
+      const user = await prisma.user.findFirst({
+        where: {
+          id,
+        },
+      });
+      if (!user) {
+        throw AuthenticationError.userNotFound(
+          "User not found",
+          "try to find a user what does not exist"
+        );
+      }
+      if (!user.verified || user.status === UserStatusEnum.BLOCKED) {
+        throw AuthenticationError.userNotVerified(
+          "User not verified or blocked",
+          "try to get user info of not verified user or user is blocked"
+        );
+      }
+      await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          refreshTokenId: null,
+        },
+      });
+    } catch (error) {
+      if (error instanceof AuthenticationError) {
+        throw error;
+      } else if (error instanceof Error) {
+        throw new AuthenticationError(
+          error.message,
+          "An error occurred while trying to logout",
+          ErrorCode.INTERNAL_SERVER,
+          "fail",
+          500
+        );
+      }
+    }
+  };
   refreshToken = async (
     id: string,
     refreshId: string
@@ -125,6 +167,7 @@ export class AuthRepositoryImpl implements AuthRepository {
         user.password,
         dto.password
       );
+      const userHasRefreshTokenId = user.refreshTokenId !== null;
       if (!isPasswordValid) {
         const failedLoginAttempts = user.failedLoginAttempts + 1;
         await prisma.user.update({
@@ -149,6 +192,9 @@ export class AuthRepositoryImpl implements AuthRepository {
           data: {
             failedLoginAttempts: 0,
             status: UserStatusEnum.ACTIVE,
+            refreshTokenId: userHasRefreshTokenId
+              ? user.refreshTokenId
+              : nanoid(),
           },
         });
       }
