@@ -3,6 +3,7 @@ import { IncomingMessage, ServerResponse, Server as HTTPServer } from "http";
 import cookieParser from "cookie-parser";
 import { AppRoutes } from "./routes/main-routes";
 import errorMiddleware from "./middlewares/error";
+import cors from "cors";
 
 export class Server {
   public readonly app: Application = express();
@@ -14,6 +15,12 @@ export class Server {
 
   constructor(port: number) {
     this.port = port;
+    this.app.use(
+      cors({
+        origin: "http://localhost:5173",
+        credentials: true,
+      })
+    );
     this.app.use(express.json());
     this.app.use(cookieParser());
     this.app.use(express.urlencoded({ extended: true }));

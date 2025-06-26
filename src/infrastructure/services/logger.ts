@@ -11,14 +11,17 @@ export class Logger {
       targets: [
         {
           target: "pino-pretty",
+          level: "info",
           options: {
             destination: "./log/output.log",
             mkdir: true,
             colorize: false,
+            translateTime: "DD:HH:MM:SS",
           },
         },
         {
           target: "pino-pretty",
+          level: "debug",
           options: {
             destination: process.stdout.fd,
             colorize: true,
