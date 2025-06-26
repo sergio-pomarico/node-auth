@@ -4,7 +4,7 @@ import { toDataURL } from "qrcode";
 
 export class SetupMFAUserUseCase {
   constructor(private repository: MFARepository) {}
-  run = async (userId: string): Promise<{ qr: string }> => {
+  run = async (userId: string): Promise<{ qr: string; secret: string }> => {
     const secret = new Secret({ size: 20 });
     const user = await this.repository.setup(secret.base32, userId);
     const otp = new TOTP({
@@ -19,6 +19,7 @@ export class SetupMFAUserUseCase {
     const qr = await toDataURL(uri);
     return {
       qr,
+      secret: secret.base32,
     };
   };
 }

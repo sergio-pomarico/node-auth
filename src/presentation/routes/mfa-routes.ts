@@ -11,8 +11,12 @@ export class MfaRoutes {
   private readonly controller: MFAController;
 
   routes(): void {
-    this.router.post("/setup", authMiddleware("access"), this.controller.setup);
+    this.router.post("/setup", authMiddleware("mfa"), this.controller.setup);
     this.router.post("/verify", authMiddleware("mfa"), this.controller.verify);
-    this.router.post("/reset", authMiddleware("access"), this.controller.reset);
+    this.router.post(
+      "/reset",
+      authMiddleware(["mfa", "access"]),
+      this.controller.reset
+    );
   }
 }

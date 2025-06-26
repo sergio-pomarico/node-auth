@@ -12,7 +12,8 @@ interface DecodedToken {
 type Scope = "access" | "mfa" | "refresh";
 
 export const authMiddleware =
-  (scope: Scope) => async (req: Request, res: Response, next: NextFunction) => {
+  (scope: Scope | Scope[]) =>
+  async (req: Request, res: Response, next: NextFunction) => {
     const { authorization: token } = req.headers;
 
     const error = HttpError.unauthorize(
@@ -25,7 +26,10 @@ export const authMiddleware =
       if (!payload) {
         res.status(401).send(error);
       } else {
-        if (scope !== payload.scope) {
+        if (
+          (Array.isArray(scope) && !scope.includes(payload.scope)) ||
+          (!Array.isArray(scope) && scope !== payload.scope)
+        ) {
           res.status(401).send(error);
         }
         if (req.body) {

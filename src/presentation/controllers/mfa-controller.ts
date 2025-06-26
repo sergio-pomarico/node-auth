@@ -8,7 +8,7 @@ import { NextFunction, Request, Response } from "express";
 export class MFAController {
   constructor(private repository: MFARepository = new MFARepositoryImpl()) {}
   setup = async (req: Request, res: Response, next: NextFunction) => {
-    const { userId } = req.body; // Assuming user ID is stored in req.user by auth middleware
+    const { userId } = req.body;
     new SetupMFAUserUseCase(this.repository)
       .run(userId)
       .then((data) => {
@@ -16,6 +16,7 @@ export class MFAController {
           status: "success",
           message: "MFA setup initiated",
           qr: data.qr,
+          secret: data.secret,
         });
       })
       .catch((error) => next(error));
