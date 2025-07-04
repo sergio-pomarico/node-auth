@@ -15,7 +15,7 @@ export class UserRepositoryImpl implements UserRepository {
   constructor() {}
   resetPassword = async (dto: ResetPasswordDTO): Promise<boolean> => {
     try {
-      const user: UserEntity | null = await prisma.user.findUnique({
+      const user: UserEntity | null = await prisma.user.findFirst({
         where: {
           id: dto.id,
         },
@@ -50,7 +50,7 @@ export class UserRepositoryImpl implements UserRepository {
       // Update the user with the new password
       await prisma.user.update({
         where: {
-          id: dto.id,
+          id: user.id,
         },
         data: {
           password: hashedPassword,

@@ -36,12 +36,4 @@ export default class AuthenticationError extends AppError {
   ): AuthenticationError {
     return new AuthenticationError(message, description, code, "error", 400);
   }
-
-  static mfaRequired(
-    message: string,
-    description: string,
-    code: ErrorCode = ErrorCode.UNAUTHORIZED
-  ): AuthenticationError {
-    return new AuthenticationError(message, description, code, "fail", 401);
-  }
 }

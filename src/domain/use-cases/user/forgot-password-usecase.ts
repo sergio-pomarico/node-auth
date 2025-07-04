@@ -2,7 +2,6 @@ import { UserRepository } from "@domain/repositories/user-repository";
 import UserEntity, { CreateUserDTO } from "@domain/entities/user";
 import { EmailService } from "@infrastructure/services/email";
 import { ParseHTMLTemplate } from "@shared/email-templates";
-import { env } from "@shared/config";
 
 export class ForgotPasswordUseCase {
   constructor(
@@ -16,7 +15,7 @@ export class ForgotPasswordUseCase {
   };
 
   sendEmailWithResetPasswordCode = async (user: UserEntity) => {
-    const url = "";
+    const url = `http://localhost:5173/restore-password/${user.id}`;
     const template = await ParseHTMLTemplate.parse("forgot", {
       name: user.name ?? "",
       URL: url,

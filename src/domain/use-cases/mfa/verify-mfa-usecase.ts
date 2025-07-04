@@ -13,7 +13,7 @@ export class VerifyMFAUserUseCase {
     const user = await this.repository.verify(userId);
 
     if (user?.mfaSecret === null || !user?.mfaEnabled) {
-      throw AuthenticationError.mfaRequired(
+      throw AuthenticationError.userNotVerified(
         "MFA is required",
         "User has not set up MFA yet"
       );
@@ -29,7 +29,7 @@ export class VerifyMFAUserUseCase {
     });
     const isValidToken = otp.validate({ token, window: 5 });
     if (isValidToken === null) {
-      throw AuthenticationError.mfaRequired(
+      throw AuthenticationError.invalidCredentials(
         "Invalid MFA token",
         "The provided MFA token is invalid"
       );
