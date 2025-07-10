@@ -2,6 +2,7 @@ import { LoginUserDTO } from "@domain/entities/user";
 import { ErrorCode } from "@domain/errors/code";
 import { AuthRepository } from "@domain/repositories/auth-repository";
 import { JWT } from "@shared/jwt";
+import { tryCatch } from "@shared/try-catch";
 import AuthenticationError from "@domain/errors/authetication";
 
 export class LoginUserUseCase {
@@ -16,14 +17,12 @@ export class LoginUserUseCase {
     const user = await this.repository.login(dto);
 
     // Generate tokens
-    const accessToken = await JWT.generateToken(
-      { id: user?.id, scope: "mfa" },
-      "access",
-      {
+    const { data: accessToken, error } = await tryCatch(
+      JWT.generateToken({ id: user?.id, scope: "mfa" }, "access", {
         expiresIn: "5m",
-      }
+      })
     );
-    if (!accessToken) {
+    if (error) {
       throw new AuthenticationError(
         "Failed to generate tokens",
         "can't not generate access token",
@@ -34,7 +33,7 @@ export class LoginUserUseCase {
     }
     return {
       mfaEnabled: user?.mfaEnabled ?? false,
-      accessToken: accessToken,
+      accessToken: accessToken!,
     };
   };
 }
