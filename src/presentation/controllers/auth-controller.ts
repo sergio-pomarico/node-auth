@@ -1,14 +1,21 @@
 import { NextFunction, Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { LoginPayload } from "@presentation/schemas/login";
 import { LoginUserUseCase } from "@domain/use-cases/auth/login-usecase";
-import { AuthRepository } from "@domain/repositories/auth-repository";
-import { AuthRepositoryImpl } from "@infrastructure/repositories/auth-repository-impl";
 import { UserInfoUseCase } from "@domain/use-cases/auth/user-info-usecase";
 import { RefreshTokenUseCase } from "@domain/use-cases/auth/refresh-token-usecase";
 import { LogoutUseCase } from "@domain/use-cases/auth/logout-usescase";
 
+@injectable()
 export class AuthController {
-  constructor(private repository: AuthRepository = new AuthRepositoryImpl()) {}
+  constructor(
+    @inject("LoginUserUseCase") private loginUserUseCase: LoginUserUseCase,
+    @inject("UserInfoUseCase") private userInfoUseCase: UserInfoUseCase,
+    @inject("RefreshTokenUseCase")
+    private refreshTokenUseCase: RefreshTokenUseCase,
+    @inject("LogoutUseCase")
+    private logoutUseCase: LogoutUseCase
+  ) {}
 
   login = async (
     req: Request<{}, {}, LoginPayload>,
@@ -16,7 +23,7 @@ export class AuthController {
     next: NextFunction
   ) => {
     const { email, password } = req.body;
-    new LoginUserUseCase(this.repository)
+    this.loginUserUseCase
       .run({ email, password })
       .then((data) => {
         res.status(200).json({
@@ -28,7 +35,7 @@ export class AuthController {
   };
   me = async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.body?.userId;
-    new UserInfoUseCase(this.repository)
+    this.userInfoUseCase
       .run(userId)
       .then((user) => {
         res.status(200).json({
@@ -40,7 +47,7 @@ export class AuthController {
   };
   refreshToken = async (req: Request, res: Response, next: NextFunction) => {
     const refreshToken = req.headers["x-refresh-token"] ?? "";
-    new RefreshTokenUseCase(this.repository)
+    this.refreshTokenUseCase
       .run(refreshToken as string)
       .then((data) => {
         res.status(200).json({
@@ -52,7 +59,7 @@ export class AuthController {
   };
   logout = async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.body?.userId;
-    new LogoutUseCase(this.repository)
+    this.logoutUseCase
       .run(userId)
       .then(() => {
         res.status(200).json({

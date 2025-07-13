@@ -1,3 +1,4 @@
+import { inject, injectable } from "inversify";
 import { LoginUserDTO } from "@domain/entities/user";
 import { ErrorCode } from "@domain/errors/code";
 import { AuthRepository } from "@domain/repositories/auth-repository";
@@ -5,8 +6,12 @@ import { JWT } from "@shared/jwt";
 import { tryCatch } from "@shared/try-catch";
 import AuthenticationError from "@domain/errors/authetication";
 
+@injectable()
 export class LoginUserUseCase {
-  constructor(private repository: AuthRepository) {}
+  constructor(
+    @inject("AuthRepository")
+    private repository: AuthRepository
+  ) {}
   run = async (
     dto: LoginUserDTO
   ): Promise<{

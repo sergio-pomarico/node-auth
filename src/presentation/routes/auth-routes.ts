@@ -3,10 +3,11 @@ import { schemaValidation } from "@presentation/middlewares/validation";
 import { loginSchema } from "@presentation/schemas/login";
 import { AuthController } from "@presentation/controllers/auth-controller";
 import { authMiddleware } from "@presentation/middlewares/authentication";
+import container from "@infrastructure/dependencies/auth-container";
 
 export class AuthRoutes {
   constructor(public readonly router = Router()) {
-    this.controller = new AuthController();
+    this.controller = container.get<AuthController>("AuthController");
     this.routes();
   }
 

@@ -1,3 +1,4 @@
+import { inject, injectable } from "inversify";
 import AuthenticationError from "@domain/errors/authetication";
 import { ErrorCode } from "@domain/errors/code";
 import { AuthRepository } from "@domain/repositories/auth-repository";
@@ -10,8 +11,12 @@ interface DecodedToken {
   refreshId: string;
 }
 
+@injectable()
 export class RefreshTokenUseCase {
-  constructor(private repository: AuthRepository) {}
+  constructor(
+    @inject("AuthRepository")
+    private repository: AuthRepository
+  ) {}
   run = async (refreshToken: string): Promise<{ accessToken: string }> => {
     // Verify the refresh token
     const decoded = await JWT.verifyToken<DecodedToken>(
