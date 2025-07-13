@@ -1,9 +1,10 @@
 import express, { Application } from "express";
 import { IncomingMessage, ServerResponse, Server as HTTPServer } from "http";
 import cookieParser from "cookie-parser";
+import cors from "cors";
+import helmet from "helmet";
 import { AppRoutes } from "./routes/main-routes";
 import errorMiddleware from "./middlewares/error";
-import cors from "cors";
 
 export class Server {
   public readonly app: Application = express();
@@ -23,6 +24,7 @@ export class Server {
     );
     this.app.use(express.json());
     this.app.use(cookieParser());
+    this.app.use(helmet());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use("/", AppRoutes.routes);
     this.app.use(errorMiddleware);
