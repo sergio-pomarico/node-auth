@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { MFAController } from "@presentation/controllers/mfa-controller";
 import { authMiddleware } from "@presentation/middlewares/authentication";
+import container from "@infrastructure/dependencies/mfa-container";
 
 export class MfaRoutes {
   constructor(public readonly router = Router()) {
-    this.controller = new MFAController();
+    this.controller = container.get<MFAController>("MFAController");
     this.routes();
   }
 

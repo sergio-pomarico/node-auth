@@ -1,3 +1,4 @@
+import { injectable } from "inversify";
 import UserEntity, { UserStatusEnum } from "@domain/entities/user";
 import AuthenticationError from "@domain/errors/authetication";
 import { ErrorCode } from "@domain/errors/code";
@@ -5,6 +6,7 @@ import { MFARepository } from "@domain/repositories/mfa-repository";
 import { tryCatch } from "@shared/try-catch";
 import prisma from "@infrastructure/data/db";
 
+@injectable()
 export class MFARepositoryImpl implements MFARepository {
   verify = async (userId: string): Promise<UserEntity | null> => {
     const { data: user, error: userError } = await tryCatch(

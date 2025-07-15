@@ -1,9 +1,14 @@
+import { inject, injectable } from "inversify";
 import { MFARepository } from "@domain/repositories/mfa-repository";
 import { Secret, TOTP } from "otpauth";
 import { toDataURL } from "qrcode";
 
+@injectable()
 export class SetupMFAUserUseCase {
-  constructor(private repository: MFARepository) {}
+  constructor(
+    @inject("MFARepository")
+    private repository: MFARepository
+  ) {}
   run = async (userId: string): Promise<{ qr: string; secret: string }> => {
     const secret = new Secret({ size: 20 });
     const user = await this.repository.setup(secret.base32, userId);

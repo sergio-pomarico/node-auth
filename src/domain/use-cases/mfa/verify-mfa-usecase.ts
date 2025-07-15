@@ -1,11 +1,16 @@
+import { inject, injectable } from "inversify";
 import AuthenticationError from "@domain/errors/authetication";
 import { ErrorCode } from "@domain/errors/code";
 import { MFARepository } from "@domain/repositories/mfa-repository";
 import { JWT } from "@shared/jwt";
 import { Secret, TOTP } from "otpauth";
 
+@injectable()
 export class VerifyMFAUserUseCase {
-  constructor(private repository: MFARepository) {}
+  constructor(
+    @inject("MFARepository")
+    private repository: MFARepository
+  ) {}
   run = async (
     userId: string,
     token: string

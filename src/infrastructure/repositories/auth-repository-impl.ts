@@ -1,3 +1,4 @@
+import { injectable } from "inversify";
 import UserEntity, {
   LoginUserDTO,
   UserInfo,
@@ -12,6 +13,7 @@ import { omit } from "@shared/properties";
 import { tryCatch } from "@shared/try-catch";
 import { nanoid } from "nanoid";
 
+@injectable()
 export class AuthRepositoryImpl implements AuthRepository {
   constructor() {}
   logout = async (id: string): Promise<void> => {

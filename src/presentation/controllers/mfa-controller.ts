@@ -1,15 +1,22 @@
-import { MFARepository } from "@domain/repositories/mfa-repository";
+import { inject, injectable } from "inversify";
 import { ResetMFAUserUseCase } from "@domain/use-cases/mfa/reset-mfa-usecase";
 import { SetupMFAUserUseCase } from "@domain/use-cases/mfa/setup-mfa-usecase";
 import { VerifyMFAUserUseCase } from "@domain/use-cases/mfa/verify-mfa-usecase";
-import { MFARepositoryImpl } from "@infrastructure/repositories/mfa-repository-impl";
 import { NextFunction, Request, Response } from "express";
 
+@injectable()
 export class MFAController {
-  constructor(private repository: MFARepository = new MFARepositoryImpl()) {}
+  constructor(
+    @inject("SetupMFAUserUseCase")
+    private setupMFAUserUseCase: SetupMFAUserUseCase,
+    @inject("ResetMFAUserUseCase")
+    private resetMFAUserUseCase: ResetMFAUserUseCase,
+    @inject("VerifyMFAUserUseCase")
+    private verifyMFAUserUseCase: VerifyMFAUserUseCase
+  ) {}
   setup = async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.body;
-    new SetupMFAUserUseCase(this.repository)
+    this.setupMFAUserUseCase
       .run(userId)
       .then((data) => {
         res.status(200).json({
@@ -23,7 +30,7 @@ export class MFAController {
   };
   verify = async (req: Request, res: Response, next: NextFunction) => {
     const { userId, token } = req.body;
-    new VerifyMFAUserUseCase(this.repository)
+    this.verifyMFAUserUseCase
       .run(userId, token)
       .then((data) => {
         res.status(200).json({
@@ -36,7 +43,7 @@ export class MFAController {
   };
   reset = async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.body;
-    new ResetMFAUserUseCase(this.repository)
+    this.resetMFAUserUseCase
       .run(userId)
       .then((result) => {
         res.status(200).json({
