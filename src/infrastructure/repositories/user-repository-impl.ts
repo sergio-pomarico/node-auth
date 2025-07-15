@@ -1,3 +1,4 @@
+import { injectable } from "inversify";
 import UserEntity, {
   CreateUserDTO,
   ResetPasswordDTO,
@@ -12,6 +13,7 @@ import { nanoid } from "nanoid";
 import prisma from "@infrastructure/data/db";
 import { tryCatch } from "@shared/try-catch";
 
+@injectable()
 export class UserRepositoryImpl implements UserRepository {
   constructor() {}
   resetPassword = async (dto: ResetPasswordDTO): Promise<boolean> => {

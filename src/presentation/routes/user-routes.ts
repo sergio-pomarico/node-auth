@@ -4,10 +4,11 @@ import { schemaValidation } from "@presentation/middlewares/validation";
 import { registerSchema } from "@presentation/schemas/register";
 import emailSchema from "@presentation/schemas/forgot-password";
 import { resetPasswordSchema } from "@presentation/schemas/reset-password";
+import container from "@infrastructure/dependencies/user-container";
 
 export class UserRoutes {
   constructor(public readonly router = Router()) {
-    this.controller = new UserController();
+    this.controller = container.get<UserController>("UserController");
     this.routes();
   }
 

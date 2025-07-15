@@ -1,10 +1,13 @@
+import { inject, injectable } from "inversify";
 import { UserRepository } from "@domain/repositories/user-repository";
-import UserEntity, { CreateUserDTO } from "@domain/entities/user";
+import UserEntity from "@domain/entities/user";
 import { EmailService } from "@infrastructure/services/email";
 import { ParseHTMLTemplate } from "@shared/email-templates";
 
+@injectable()
 export class ForgotPasswordUseCase {
   constructor(
+    @inject("UserRepository")
     private repository: UserRepository,
     private emailService = new EmailService()
   ) {}

@@ -1,7 +1,7 @@
+import { inject, injectable } from "inversify";
 import { NextFunction, Request, Response } from "express";
 import { CreateUserDTO } from "@domain/entities/user";
 import { CreateUserUseCase } from "@domain/use-cases/user/create-user-usecase";
-import { UserRepositoryImpl } from "@infrastructure/repositories/user-repository-impl";
 import { UserRepository } from "@domain/repositories/user-repository";
 import { RegisterPayload } from "@presentation/schemas/register";
 import { VerifyUserUseCase } from "@domain/use-cases/user/verify-user-usecase";
@@ -10,8 +10,18 @@ import { ForgotPasswordPayload } from "@presentation/schemas/forgot-password";
 import { ResetPasswordPayload } from "@presentation/schemas/reset-password";
 import { ResetPasswordUseCase } from "@domain/use-cases/user/reset-password-usecase";
 
+@injectable()
 export class UserController {
-  constructor(private repository: UserRepository = new UserRepositoryImpl()) {}
+  constructor(
+    @inject("UserRepository")
+    private repository: UserRepository,
+    @inject("CreateUserUseCase") private createUserUseCase: CreateUserUseCase,
+    @inject("VerifyUserUseCase") private verifyUserUseCase: VerifyUserUseCase,
+    @inject("ForgotPasswordUseCase")
+    private forgotPasswordUseCase: ForgotPasswordUseCase,
+    @inject("ResetPasswordUseCase")
+    private resetPasswordUseCase: ResetPasswordUseCase
+  ) {}
 
   register = async (
     req: Request<{}, {}, RegisterPayload>,
@@ -25,7 +35,7 @@ export class UserController {
       name,
       lastName,
     };
-    new CreateUserUseCase(this.repository)
+    this.createUserUseCase
       .run(dto)
       .then((user) =>
         res.json({
@@ -42,7 +52,7 @@ export class UserController {
     next: NextFunction
   ) => {
     const { userId, verificationCode } = req.params;
-    new VerifyUserUseCase(this.repository)
+    this.verifyUserUseCase
       .run({ userId, verificationCode })
       .then((result) =>
         res.json({
@@ -59,7 +69,7 @@ export class UserController {
     next: NextFunction
   ) => {
     const { email } = req.body;
-    new ForgotPasswordUseCase(this.repository)
+    this.forgotPasswordUseCase
       .run(email)
       .then(() =>
         res.json({
@@ -82,7 +92,7 @@ export class UserController {
   ) => {
     const { userId, passwordResetCode } = req.params;
     const { password } = req.body;
-    new ResetPasswordUseCase(this.repository)
+    this.resetPasswordUseCase
       .run({ userId, passwordResetCode, password })
       .then((result) =>
         res.json({

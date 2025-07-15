@@ -1,7 +1,12 @@
+import { inject, injectable } from "inversify";
 import { UserRepository } from "@domain/repositories/user-repository";
 
+@injectable()
 export class ResetPasswordUseCase {
-  constructor(private repository: UserRepository) {}
+  constructor(
+    @inject("UserRepository")
+    private repository: UserRepository
+  ) {}
   run = async (data: {
     userId: string;
     passwordResetCode: string;
