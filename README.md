@@ -42,6 +42,39 @@ src/
     └── properties.ts
 ```
 
+## Data Model
+
+```mermaid
+erDiagram
+    User {
+        string id PK "UUID, Primary Key"
+        string name "Optional, User's first name"
+        string lastName "Optional, User's last name"
+        string email UK "Unique, User's email address"
+        boolean verified "Default: false, Email verification status"
+        string verificationCode "Optional, nanoid() for email verification"
+        datetime verificationCodeExpiresAt "Optional, Verification code expiration"
+        string passwordResetCode "Optional, nanoid() for password reset"
+        datetime passwordResetCodeExpiresAt "Optional, Password reset code expiration"
+        int failedLoginAttempts "Default: 0, Track failed login attempts"
+        enum status "ACTIVE|INACTIVE|BLOCKED, User account status"
+        string password "Hashed, Encrypted user password"
+        string refreshTokenId "Optional, nanoid() for refresh token management"
+        boolean mfaEnabled "Default: false, Multi-factor authentication status"
+        string mfaSecret "Optional, TOTP secret for MFA"
+        datetime createdAt "Default: now(), Record creation timestamp"
+        datetime updatedAt "Default: now(), Record last update timestamp"
+    }
+
+    UserStatus {
+        string ACTIVE "User account is active and can access the system"
+        string INACTIVE "User account is inactive (default state)"
+        string BLOCKED "User account is blocked due to security reasons"
+    }
+
+    User ||--o{ UserStatus : "has status"
+```
+
 ## API Endpoints
 
 ### Authentication
