@@ -47,6 +47,6 @@
     "zod-validation-error": "^3.4.0"
   },
   "prisma": {
-    "schema": "./src/infrastructure/data/schema.prisma"
+    "schema": "./src/infrastructure/data/schema/"
   }
 }
