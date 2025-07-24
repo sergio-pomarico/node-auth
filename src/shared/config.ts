@@ -11,6 +11,8 @@ export const env = {
     port: get("PORT").required().asPortNumber(),
     resend: get("RESEND_API_KEY").required().asString(),
     url: get("SERVER_URL").required().asString(),
+    logtail_key: get("BETTER_STACK_API_KEY").required().asString(),
+    logtail_url: get("BETTER_STACK_API_URL").required().asString(),
   },
 };
 

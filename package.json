@@ -26,6 +26,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@logtail/pino": "^0.5.5",
     "@prisma/client": "6.6.0",
     "argon2": "^0.43.0",
     "cookie-parser": "^1.4.7",

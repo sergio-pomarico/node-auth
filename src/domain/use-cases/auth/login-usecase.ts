@@ -3,6 +3,7 @@ import { LoginUserDTO } from "@domain/entities/user";
 import { ErrorCode } from "@domain/errors/code";
 import { AuthRepository } from "@domain/repositories/auth-repository";
 import { JWT } from "@shared/jwt";
+import { Logger } from "@infrastructure/services/logger";
 import { tryCatch } from "@shared/try-catch";
 import AuthenticationError from "@domain/errors/authetication";
 
@@ -10,7 +11,9 @@ import AuthenticationError from "@domain/errors/authetication";
 export class LoginUserUseCase {
   constructor(
     @inject("AuthRepository")
-    private repository: AuthRepository
+    private repository: AuthRepository,
+    @inject("Logger")
+    private logger: Logger
   ) {}
   run = async (
     dto: LoginUserDTO
@@ -28,6 +31,10 @@ export class LoginUserUseCase {
       })
     );
     if (error) {
+      this.logger.error("Failed to generate access token", {
+        userId: user?.id,
+        error,
+      });
       throw new AuthenticationError(
         "Failed to generate tokens",
         "can't not generate access token",

@@ -4,27 +4,30 @@ import pino, {
   transport as PinoTransport,
   levels,
 } from "pino";
+import { env } from "@shared/config";
 
 export class Logger {
   constructor() {
     const transport: DestinationStream = PinoTransport({
       targets: [
         {
-          target: "pino-pretty",
+          target: "@logtail/pino",
           level: "info",
           options: {
-            destination: "./log/output.log",
-            mkdir: true,
-            colorize: false,
-            translateTime: "DD:HH:MM:SS",
+            sourceToken: env.server.logtail_key,
+            translateTime: "yyyy-mm-dd HH:MM:ss",
+            options: {
+              endpoint: env.server.logtail_url,
+            },
           },
         },
         {
           target: "pino-pretty",
-          level: "debug",
+          level: "info",
           options: {
             destination: process.stdout.fd,
             colorize: true,
+            translateTime: "yyyy-mm-dd HH:MM:ss",
           },
         },
       ],
@@ -32,6 +35,19 @@ export class Logger {
     this.logger = pino(
       {
         level: levels.labels[levels.values.info],
+        redact: {
+          paths: [
+            "*.verified",
+            "*.password",
+            "*.verificationCode",
+            "*.passwordResetCode",
+            "*.verificationCodeExpiresAt",
+            "*.passwordResetCodeExpiresAt",
+            "*.mfaSecret",
+            "*.refreshTokenId",
+          ],
+          censor: "**********",
+        },
       },
       transport
     );
@@ -51,11 +67,11 @@ export class Logger {
     this.logger.error(args, message);
   }
 
-  debug(message: string, args?: unknown) {
-    this.logger.debug(args, message);
+  fatal(message: string, args?: unknown) {
+    this.logger.fatal(args, message);
   }
 
-  trace(message: string, args?: unknown) {
-    this.logger.trace(args, message);
+  debug(message: string, args?: unknown) {
+    this.logger.debug(args, message);
   }
 }
