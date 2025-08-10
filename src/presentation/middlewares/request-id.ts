@@ -21,6 +21,8 @@ class RequestIDMiddleware {
       requestId: req.requestId,
       userAgent,
       ip: req.ip,
+      method: req.method,
+      url: req.originalUrl,
     });
 
     this.als.runWithStore(this.store, () => next());

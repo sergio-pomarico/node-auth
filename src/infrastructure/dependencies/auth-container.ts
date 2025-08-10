@@ -7,7 +7,7 @@ import { LoginUserUseCase } from "@domain/use-cases/auth/login-usecase";
 import { LogoutUseCase } from "@domain/use-cases/auth/logout-usescase";
 import { RefreshTokenUseCase } from "@domain/use-cases/auth/refresh-token-usecase";
 import { UserInfoUseCase } from "@domain/use-cases/auth/user-info-usecase";
-import { Logger } from "@infrastructure/services/logger";
+import { Logger, logger } from "@infrastructure/services/logger";
 
 const container = new Container();
 
@@ -19,6 +19,6 @@ container
   .bind<RefreshTokenUseCase>("RefreshTokenUseCase")
   .to(RefreshTokenUseCase);
 container.bind<UserInfoUseCase>("UserInfoUseCase").to(UserInfoUseCase);
-container.bind<Logger>("Logger").to(Logger);
+container.bind<Logger>("Logger").toConstantValue(logger);
 
 export default container;

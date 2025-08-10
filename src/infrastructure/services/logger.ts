@@ -7,6 +7,7 @@ import pino, {
 import { env } from "@shared/config";
 
 export class Logger {
+  private static instance: Logger;
   constructor() {
     const transport: DestinationStream = PinoTransport({
       targets: [
@@ -55,6 +56,13 @@ export class Logger {
 
   private logger: PinoLogger;
 
+  public static getInstance(): Logger {
+    if (!Logger.instance) {
+      Logger.instance = new Logger();
+    }
+    return Logger.instance;
+  }
+
   info(message: string, args?: unknown) {
     this.logger.info(args, message);
   }
@@ -75,3 +83,5 @@ export class Logger {
     this.logger.debug(args, message);
   }
 }
+
+export const logger = Logger.getInstance();
