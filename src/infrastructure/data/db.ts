@@ -1,8 +1,8 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../../../.generated/client";
 import { logger } from "@infrastructure/services/logger";
 import { asyncStorageService } from "@infrastructure/services/async-storage";
 
-const primaClientSingleton = () => {
+const prismaClientSingleton = () => {
   return new PrismaClient().$extends({
     name: "logger",
     query: {
@@ -27,11 +27,10 @@ const primaClientSingleton = () => {
 };
 
 declare const globalThis: {
-  prismaGlobal: ReturnType<typeof primaClientSingleton> & typeof global;
+  prismaGlobal: ReturnType<typeof prismaClientSingleton> & typeof global;
 };
 
-const prisma = globalThis.prismaGlobal ?? primaClientSingleton();
-
+const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
 export default prisma;
 
 if (process.env.NODE_ENV !== "production") {

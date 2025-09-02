@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   auth-app-release:
     container_name: auth_app

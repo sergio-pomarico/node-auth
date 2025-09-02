@@ -196,6 +196,9 @@ $RECYCLE.BIN/
 postgres/
 redis/
 
+# Prisma
+.generated/
+
 # certificates
 *.pem
 
