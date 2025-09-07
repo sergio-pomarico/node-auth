@@ -116,6 +116,7 @@ export class UserRepositoryImpl implements UserRepository {
         verificationCode: null,
         verificationCodeExpiresAt: null,
         status: UserStatusEnum.ACTIVE,
+        verified: true,
       },
     });
     return true;
@@ -132,7 +133,7 @@ export class UserRepositoryImpl implements UserRepository {
     if (existingUserError)
       throw new AuthenticationError(
         "An error occurred while creating the user",
-        "An unexpected error occurred while trying to create the user",
+        "an user with this email already exists",
         ErrorCode.INTERNAL_SERVER,
         "fail",
         500

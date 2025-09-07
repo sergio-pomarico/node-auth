@@ -2,26 +2,45 @@ import { inject, injectable } from "inversify";
 import { NextFunction, Request, Response } from "express";
 import { CreateUserDTO } from "@domain/entities/user";
 import { CreateUserUseCase } from "@domain/use-cases/user/create-user-usecase";
-import { UserRepository } from "@domain/repositories/user-repository";
 import { RegisterPayload } from "@presentation/schemas/register";
 import { VerifyUserUseCase } from "@domain/use-cases/user/verify-user-usecase";
 import { ForgotPasswordUseCase } from "@domain/use-cases/user/forgot-password-usecase";
 import { ForgotPasswordPayload } from "@presentation/schemas/forgot-password";
 import { ResetPasswordPayload } from "@presentation/schemas/reset-password";
 import { ResetPasswordUseCase } from "@domain/use-cases/user/reset-password-usecase";
+import { UploadProfileImageUseCase } from "@domain/use-cases/user/upload-profile-image-usecase";
 
 @injectable()
 export class UserController {
   constructor(
-    @inject("UserRepository")
-    private repository: UserRepository,
     @inject("CreateUserUseCase") private createUserUseCase: CreateUserUseCase,
     @inject("VerifyUserUseCase") private verifyUserUseCase: VerifyUserUseCase,
     @inject("ForgotPasswordUseCase")
     private forgotPasswordUseCase: ForgotPasswordUseCase,
     @inject("ResetPasswordUseCase")
-    private resetPasswordUseCase: ResetPasswordUseCase
+    private resetPasswordUseCase: ResetPasswordUseCase,
+    @inject("UploadProfileImageUseCase")
+    private uploadProfileImageUseCase: UploadProfileImageUseCase
   ) {}
+
+  profileImage = async (req: Request, res: Response, next: NextFunction) => {
+    const file = req.file as Express.Multer.File;
+    const { userId } = req.params;
+    this.uploadProfileImageUseCase
+      .run({
+        id: userId,
+        buffer: file,
+      })
+      .then((result) => {
+        res.status(200).json({
+          status: result ? "success" : "error",
+          message: result
+            ? "Profile image uploaded successfully"
+            : "Failed to upload profile image",
+        });
+      })
+      .catch((error) => next(error));
+  };
 
   register = async (
     req: Request<{}, {}, RegisterPayload>,
@@ -53,7 +72,7 @@ export class UserController {
   ) => {
     const { userId, verificationCode } = req.params;
     this.verifyUserUseCase
-      .run({ userId, verificationCode })
+      .run({ id: userId, verificationCode })
       .then((result) =>
         res.json({
           status: result ? "success" : "error",

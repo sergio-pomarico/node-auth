@@ -8,7 +8,7 @@ export class VerifyUserUseCase {
     private repository: UserRepository
   ) {}
   run = async (data: {
-    userId: string;
+    id: string;
     verificationCode: string;
   }): Promise<boolean> => {
     const result = await this.repository.verifyEmail(data);

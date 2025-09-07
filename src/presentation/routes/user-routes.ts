@@ -5,6 +5,8 @@ import { registerSchema } from "@presentation/schemas/register";
 import emailSchema from "@presentation/schemas/forgot-password";
 import { resetPasswordSchema } from "@presentation/schemas/reset-password";
 import container from "@infrastructure/dependencies/user-container";
+import { authMiddleware } from "@presentation/middlewares/authentication";
+import { fileMiddleware } from "@presentation/middlewares/file";
 
 export class UserRoutes {
   constructor(public readonly router = Router()) {
@@ -23,6 +25,18 @@ export class UserRoutes {
     this.router.get(
       "/verify/:userId/:verificationCode",
       this.controller.verify
+    );
+    this.router.post(
+      "/profile-image/:userId",
+      authMiddleware("access"),
+      fileMiddleware([
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "image/webp",
+        "image/gif",
+      ]),
+      this.controller.profileImage
     );
     this.router.post(
       "/forgot-password",

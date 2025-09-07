@@ -5,6 +5,7 @@ declare global {
   namespace Express {
     interface Request {
       requestId: string;
+      file?: Express.Multer.File;
     }
   }
 }

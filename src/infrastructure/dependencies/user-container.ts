@@ -7,6 +7,7 @@ import { CreateUserUseCase } from "@domain/use-cases/user/create-user-usecase";
 import { ForgotPasswordUseCase } from "@domain/use-cases/user/forgot-password-usecase";
 import { ResetPasswordUseCase } from "@domain/use-cases/user/reset-password-usecase";
 import { VerifyUserUseCase } from "@domain/use-cases/user/verify-user-usecase";
+import { UploadProfileImageUseCase } from "@domain/use-cases/user/upload-profile-image-usecase";
 
 const container = new Container();
 
@@ -20,5 +21,8 @@ container
   .bind<ResetPasswordUseCase>("ResetPasswordUseCase")
   .to(ResetPasswordUseCase);
 container.bind<VerifyUserUseCase>("VerifyUserUseCase").to(VerifyUserUseCase);
+container
+  .bind<UploadProfileImageUseCase>("UploadProfileImageUseCase")
+  .to(UploadProfileImageUseCase);
 
 export default container;

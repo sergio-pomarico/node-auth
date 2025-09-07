@@ -1,0 +1,27 @@
+meta {
+  name: Upload profile image
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{URL}}/user/profile-image/:userId/
+  body: multipartForm
+  auth: inherit
+}
+
+params:path {
+  userId: aafc770c-3922-451a-99e8-3086e11b29b2
+}
+
+headers {
+  Authorization: {{token}}
+}
+
+body:multipart-form {
+  file: @file(/Users/checho/Downloads/Dashboard.png)
+}
+
+settings {
+  encodeUrl: true
+}
