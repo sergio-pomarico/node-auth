@@ -1,15 +1,15 @@
-import fs from "fs/promises";
-import path from "path";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 export class ParseHTMLTemplate {
   static async parse(
     template: string,
-    data: Record<string, string>
+    data: Record<string, string>,
   ): Promise<string> {
     const route = path.resolve(
       __dirname,
       "../../src/presentation/templates",
-      `${template}.html`
+      `${template}.html`,
     );
     let htmlBody = await fs.readFile(route, "utf-8");
     htmlBody = htmlBody.replace(/{{(.*?)}}/g, (_, varName) => {

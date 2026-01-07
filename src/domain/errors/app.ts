@@ -1,4 +1,4 @@
-import { ErrorCode } from "./code";
+import type { ErrorCode } from "./code";
 import { ErrorDetails } from "./detail";
 
 export default class AppError extends Error {
@@ -9,7 +9,7 @@ export default class AppError extends Error {
     description: string,
     code: ErrorCode,
     public readonly status: "fail" | "error",
-    public readonly statusCode: number
+    public readonly statusCode: number,
   ) {
     super(message);
     this.error = new ErrorDetails(code, message, description);
