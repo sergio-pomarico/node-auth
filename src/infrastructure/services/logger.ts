@@ -5,10 +5,13 @@ import pino, {
   levels,
 } from "pino";
 import { env } from "@shared/config";
+import { AsyncStorageService } from "@infrastructure/services/async-storage";
 
 export class Logger {
   private static instance: Logger;
-  constructor() {
+  private als = AsyncStorageService.getInstance();
+
+  private constructor() {
     const transport: DestinationStream = PinoTransport({
       targets: [
         {
@@ -63,24 +66,40 @@ export class Logger {
     return Logger.instance;
   }
 
+  private getRequestId(): string | undefined {
+    const store = this.als.getStore();
+    return store?.get("x-request-id");
+  }
+
+  private enrichArgs(args?: unknown): unknown {
+    const requestId = this.getRequestId();
+    if (!requestId) return args;
+
+    if (!args || typeof args !== "object") {
+      return { requestId };
+    }
+
+    return { ...args, requestId };
+  }
+
   info(message: string, args?: unknown) {
-    this.logger.info(args, message);
+    this.logger.info(this.enrichArgs(args), message);
   }
 
   warn(message: string, args?: unknown) {
-    this.logger.warn(args, message);
+    this.logger.warn(this.enrichArgs(args), message);
   }
 
   error(message: string, args?: unknown) {
-    this.logger.error(args, message);
+    this.logger.error(this.enrichArgs(args), message);
   }
 
   fatal(message: string, args?: unknown) {
-    this.logger.fatal(args, message);
+    this.logger.fatal(this.enrichArgs(args), message);
   }
 
   debug(message: string, args?: unknown) {
-    this.logger.debug(args, message);
+    this.logger.debug(this.enrichArgs(args), message);
   }
 }
 

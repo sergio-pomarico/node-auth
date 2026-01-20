@@ -17,6 +17,7 @@ export class Server {
 
   constructor(port: number) {
     this.port = port;
+    this.app.use(requestID.use);
     this.app.use(
       cors({
         origin: "http://localhost:5173",
@@ -26,7 +27,6 @@ export class Server {
     this.app.use(express.json());
     this.app.use(cookieParser());
     this.app.use(helmet());
-    this.app.use(requestID.use);
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use("/", AppRoutes.routes);
     this.app.use(errorMiddleware);

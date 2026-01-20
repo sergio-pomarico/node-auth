@@ -1,13 +1,15 @@
 import { PrismaClient } from "../../../.generated/client";
 import { logger } from "@infrastructure/services/logger";
-import { asyncStorageService } from "@infrastructure/services/async-storage";
+import { AsyncStorageService } from "@infrastructure/services/async-storage";
 
 const prismaClientSingleton = () => {
   return new PrismaClient().$extends({
     name: "logger",
     query: {
       async $allOperations({ operation, model, args, query }) {
-        const requestId = asyncStorageService.getStore()?.get("xRequestId");
+        const requestId = AsyncStorageService.getInstance()
+          .getStore()
+          ?.get("x-request-id");
         const start = performance.now();
         const result = await query(args);
         const end = performance.now();
@@ -32,6 +34,7 @@ declare const globalThis: {
 
 const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
 export default prisma;
+export type PrismaSingleton = typeof prisma;
 
 if (process.env.NODE_ENV !== "production") {
   globalThis.prismaGlobal = prisma;
